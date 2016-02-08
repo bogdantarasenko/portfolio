@@ -6,6 +6,8 @@ use App\Projects;
 use App\Blog;
 use App\Contact;
 use App\About;
+use App\Media;
+use Validator;
 
 class HomeController extends Controller {
 
@@ -35,10 +37,7 @@ class HomeController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index()
-	{
-		return view('admin.index');
-	}
+	
 	public function addprj(Request $request){
 		//$input = $request->all();
 		if($request->hasFile('image')){
@@ -66,48 +65,207 @@ class HomeController extends Controller {
 		//dd($input);
 	}
 
+	public function index()
+	{	
+		$portfolio = Projects::all();
+
+		$image_array = [];
+
+		foreach ($portfolio as $images) {
+			$image_array["$images->id"] = explode(",",$images->imgpath);
+		}
+		
+		//dd($image_array);
+		return view('admin.index',['portfolio_data' => $portfolio,'images' => $image_array]);
+	}
+
 	public function editportfolio(){
-		return view('admin.editportfolio');
+
+		$view_data = ['title' => 'добавить'];
+
+		return view('admin.editportfolio',['view_data' => $view_data]);
 	}
 	public function editabout(){
+
 		return view('admin.editabout');
 	}
 	public function editblog(){
+
 		return view('admin.editblog');
 	}
 	public function editcontact(){
+
 		return view('admin.editcontact');
 	}
 
-	public function posteditportfolio(Request $request){
+	public function updateitem($id){
 
-		$model = new Projects;
+		$view_data = ['title' => 'изменить'];
 
-		if($request->hasFile('image')){
-			$destenition = public_path()."/img/";
-			$extension = $request->file('image')->getClientOriginalExtension();
-			$fileName = rand(11111,99999).'.'.$extension;
-			$request->file('image')->move($destenition,$fileName);
-		}
-		
+		return view('admin.updateitem',['id' => $id,'view_data' => $view_data]);	
+	}
 
-		
-		$model->name = $request->input('name');
-		$model->description = $request->input('description');
-		$model->additional_description = $request->input('additional_description');
-		$model->url = $request->input('url');
-
-		if(isset($fileName)){
-			$model->imgpath = $fileName;
-		}
-		
-		if($model->save()){
+	public function deleteitem($id){
+		$model_project = Projects::find($id);
+		$delete = $model_project->delete();
+		if($delete){
 			return redirect('/admin');
-		}
+		}	
+	}
+
+
+
+	/*public function posteditportfolio(Request $request)
+	{
+
+		
+		//var_dump($request->input('updateid'));
+		
+		if(empty($request->input('updateid'))){
+
+			$model = new Projects;
+
+			if($request->hasFile('image')){
+				$destenition = public_path()."/img/";
+				$extension = $request->file('image')->getClientOriginalExtension();
+				$fileName = rand(11111,99999).'.'.$extension;
+				$request->file('image')->move($destenition,$fileName);
+			}
+			
+
+			
+			$model->name = $request->input('name');
+			$model->description = $request->input('description');
+			$model->additional_description = $request->input('additional_description');
+			$model->url = $request->input('url');
+
+			if(isset($fileName)){
+				$model->imgpath = $fileName;
+			}
+			
+			if($model->save()){
+				return redirect('/admin');
+			}
+		}else{
+
+			
+			$model =  Projects::find($request->input('updateid'));
+
+			if($request->hasFile('image')){
+				$destenition = public_path()."/img/";
+				$extension = $request->file('image')->getClientOriginalExtension();
+				$fileName = rand(11111,99999).'.'.$extension;
+				$request->file('image')->move($destenition,$fileName);
+			}
+
+			$model->name = $request->input('name');
+			$model->description = $request->input('description');
+			$model->additional_description = $request->input('additional_description');
+			$model->url = $request->input('url');
+
+			if(isset($fileName)){
+				$model->imgpath = $fileName;
+			}
+			
+			if($model->save()){
+				return redirect('/admin');
+			}
+			
+	}*/
+
+	public function posteditportfolio(Request $request)
+	{
+		
+		if(empty($request->input('updateid')))
+		{
+
+			$model = new Projects;
+
+			if($request->hasFile('image')){
+
+				$files = $request->file('image');
+			  
+			    $medias = [];
+			     
+			    $errors = [];
+			    
+			    foreach($files as $file) {
+
+			     
+			        $destenition = public_path()."/img/";
+			                
+			        $extension = $file->getClientOriginalExtension();
+			                
+			        $fileName = rand(11111,99999).'.'.$extension;
+
+			        $file->move($destenition, $fileName);
+			                
+			        array_push($medias, $fileName); 
+
+			        $images = implode(",",$medias);
+			         
+			    }
+			    
+			}
+			
+			$model->name = $request->input('name');
+			$model->description = $request->input('description');
+			$model->additional_description = $request->input('additional_description');
+			$model->url = $request->input('url');
+
+			if(isset($images)){
+				$model->imgpath = $images;
+			}
+			
+			if($model->save()){
+				return redirect('/admin');
+			}
+		}else{
+
+			$model =  Projects::find($request->input('updateid'));
+
+			if($request->hasFile('image')){
+
+				$files = $request->file('image');
+			  
+			    $medias = [];
+			    
+			    foreach($files as $file) {
+
+			        $destenition = public_path()."/img/";
+			                
+			        $extension = $file->getClientOriginalExtension();
+			                
+			        $fileName = rand(11111,99999).'.'.$extension;
+
+			        $file->move($destenition, $fileName);
+			                
+			        array_push($medias, $fileName); 
+
+			        $images = implode(",",$medias);
+			         
+			    }
+			    
+			}
+
+			$model->name = $request->input('name');
+			$model->description = $request->input('description');
+			$model->additional_description = $request->input('additional_description');
+			$model->url = $request->input('url');
+
+			if(isset($images)){
+				$model->imgpath = $images;
+			}
+			
+			if($model->save()){
+				return redirect('/admin');
+			}
 
 	}
+}
+
 	public function posteditabout(Request $request){
-		
+
 		$model_about = new About;
 		$model_about->about = $request->input('about');
 		$model_about->save();
@@ -128,6 +286,7 @@ class HomeController extends Controller {
 		$model_contact->work_time = $request->input('work_time');
 		$model_contact->save();
 	}
+
 
 	
 

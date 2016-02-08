@@ -13,6 +13,13 @@
 
 Route::get('/', ['middleware' => 'adminsignup','uses' => 'MainController@index']);
 
+Route::get('/about', 'MainController@about');
+
+Route::get('/portfolio', 'MainController@portfolio');
+
+Route::get('/contact', 'MainController@contact');
+
+Route::get('/blog', 'MainController@blog');
 
 
 Route::get('/auth/login','AuthController@loginform');
@@ -39,7 +46,13 @@ Route::get('/admin/blog', 'HomeController@editblog');
 
 Route::get('/admin/contact', 'HomeController@editcontact');
 
+Route::get('/admin/deleteitem/{id}', 'HomeController@deleteitem');
+
+Route::get('/admin/updateitem/{id}', 'HomeController@updateitem');
+
 //--------------
+
+Route::post('/admin/updateitem', 'HomeController@posteditportfolio');
 
 Route::post('/admin/portfolio', 'HomeController@posteditportfolio');
 
@@ -48,6 +61,8 @@ Route::post('/admin/about', 'HomeController@posteditabout');
 Route::post('/admin/blog', 'HomeController@posteditblog');
 
 Route::post('/admin/contact', 'HomeController@posteditcontact');
+
+
 
 
 

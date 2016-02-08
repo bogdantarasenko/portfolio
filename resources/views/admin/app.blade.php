@@ -28,7 +28,7 @@
 
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<li><a href="http://vk.com/id156172156"><img src="/public/avatar.jpg" style="border-radius:50%;" width="45px" height="45px"></a></li>
+					<!--<li><a href="http://vk.com/id156172156"><img src="/public/avatar.jpg" style="border-radius:50%;" width="45px" height="45px"></a></li>-->
 					<li><a href="/">Главная</a></li>
 				</ul>
 

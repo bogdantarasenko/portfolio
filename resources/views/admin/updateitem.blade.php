@@ -17,9 +17,8 @@
 							</ul>
 						</div>
 					@endif
-					
-					@include('admin.project_form');
 
+					@include('admin.project_form');
 				</div>
 			</div>
 		</div>
